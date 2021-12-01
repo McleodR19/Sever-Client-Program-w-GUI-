@@ -4,7 +4,12 @@ import tkinter
 import tkinter.scrolledtext
 from tkinter import simpledialog
 
-HOST = '127.0.0.1'
+# '10.18.8.12' this is evans computer IP address for the current day (CSLAB IP?) for the server location
+# if you want to run the sever on the local computer then you need to add the following code to HOST
+# socket.gethostbyname(hostname)
+hostname = socket.gethostname()
+HEADER = 1024
+HOST = '10.18.8.12'
 PORT = 5555
 
 
@@ -17,7 +22,7 @@ class Client:
         msg = tkinter.Tk()
         msg.withdraw()
 
-        self.nickname = simpledialog.askstring("Nickname", "Please choose a nickname", parent=msg)
+        self.nickname = simpledialog.askstring("Username", "Please choose a username", parent=msg)
 
         self.gui_done = False
         self.running = True
@@ -30,9 +35,9 @@ class Client:
 
     def gui_loop(self):
         self.win = tkinter.Tk()
-        self.win.configure(bg="lightgray")
+        self.win.configure(bg="deepskyblue")
 
-        self.chat_label = tkinter.Label(self.win, text="Chat:", bg="lightgray")
+        self.chat_label = tkinter.Label(self.win, text="Chat:", bg="deepskyblue")
         self.chat_label.config(font=("Arial", 12))
         self.chat_label.pack(padx=20, pady=5)
 
@@ -40,7 +45,7 @@ class Client:
         self.text_area.pack(padx=20, pady=5)
         self.text_area.config(state='disabled')
 
-        self.msg_label = tkinter.Label(self.win, text="Message", bg="lightgray")
+        self.msg_label = tkinter.Label(self.win, text="Message", bg="deepskyblue")
         self.msg_label.config(font=("Arial", 12))
         self.msg_label.pack(padx=20, pady=5)
 
@@ -49,7 +54,7 @@ class Client:
 
         self.send_button = tkinter.Button(self.win, text="Send", command=self.write)
         self.send_button.config(font=("Arial", 12))
-        self.send_button.pack(padx=20,pady=5)
+        self.send_button.pack(padx=20, pady=5)
 
         self.gui_done = True
         self.win.protocol("WM_DELETE_WINDOW", self.stop)
@@ -57,7 +62,7 @@ class Client:
         self.win.mainloop()
 
     def write(self):
-        message = f"{self.nickname}: {self.input_area.get('1.0', 'end')}"
+        message = str(self.nickname) + "-> " + self.input_area.get('1.0', 'end')
         self.sock.send(message.encode('utf-8'))
         self.input_area.delete('1.0', 'end')
 
@@ -70,9 +75,9 @@ class Client:
     def receive(self):
         while self.running:
             try:
-                message = self.sock.recv(1024)
-                if message == 'NICK':
-                    self.sock.send(self.nickname.encode('utf8'))
+                message = self.sock.recv(HEADER).decode('utf-8')
+                if message == 'Welcome':
+                    self.sock.send(self.nickname.encode('utf-8'))
                 else:
                     if self.gui_done:
                         self.text_area.config(state='normal')
