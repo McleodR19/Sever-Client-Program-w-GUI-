@@ -4,12 +4,12 @@ import tkinter
 import tkinter.scrolledtext
 from tkinter import simpledialog
 
-# '10.18.8.12' this is evans computer IP address for the current day (CSLAB IP?) for the server location
+
 # if you want to run the sever on the local computer then you need to add the following code to HOST
 # socket.gethostbyname(hostname)
 hostname = socket.gethostname()
 HEADER = 1024
-HOST = '10.18.8.12'
+HOST = socket.gethostbyname(hostname)
 PORT = 5555
 
 
